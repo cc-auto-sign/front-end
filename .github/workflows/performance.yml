@@ -1,0 +1,75 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lighthouse:
+    name: Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Serve built application
+      run: |
+        npm install -g serve
+        serve -s dist -l 3000 &
+        sleep 5
+        
+    - name: Run Lighthouse CI
+      run: |
+        npm install -g @lhci/cli
+        lhci autorun
+      env:
+        LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build and analyze bundle
+      run: |
+        npm run build
+        npx vite-bundle-analyzer dist/
+        
+    - name: Check bundle size
+      run: |
+        # 检查构建产物大小
+        BUNDLE_SIZE=$(du -sh dist/ | cut -f1)
+        echo "Bundle size: $BUNDLE_SIZE"
+        
+        # 如果需要，可以设置大小限制
+        # if [ $(du -s dist/ | cut -f1) -gt 10000 ]; then
+        #   echo "Bundle size exceeds limit!"
+        #   exit 1
+        # fi
