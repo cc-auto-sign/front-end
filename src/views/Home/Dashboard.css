@@ -1,0 +1,243 @@
+.dashboard-layout {
+  min-height: 100vh;
+}
+
+.dashboard-layout .header {
+  background: #fff;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-menu {
+  margin-right: 20px;
+}
+
+.dashboard-layout .header h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.dashboard-layout .content {
+  margin: 16px 12px 0;
+  overflow: initial;
+  padding-bottom: 20px;
+}
+
+.dashboard-stats {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.dashboard-stats .ant-card {
+  flex: 1 1 calc(50% - 12px);
+  margin-right: 12px;
+  margin-bottom: 12px;
+  min-width: 150px;
+  transition: all 0.3s;
+}
+
+.dashboard-stats .ant-card:nth-child(2n) {
+  margin-right: 0;
+}
+
+@media (min-width: 768px) {
+
+  .dashboard-layout .header {
+    padding: 0 20px;
+  }
+
+  .dashboard-layout .header h1 {
+    font-size: 20px;
+  }
+
+  .dashboard-layout .content {
+    margin: 24px 16px 0;
+  }
+
+  .dashboard-stats .ant-card {
+    flex: 1 1 calc(25% - 12px);
+    margin-bottom: 0;
+  }
+
+  .dashboard-stats .ant-card:nth-child(2n) {
+    margin-right: 12px;
+  }
+
+  .dashboard-stats .ant-card:last-child {
+    margin-right: 0;
+  }
+
+  .mobile-menu-button {
+    display: none !important;
+  }
+}
+
+.dashboard-stats .ant-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.platform-card {
+  height: 100%;
+  transition: all 0.3s;
+}
+
+.platform-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
+.platform-icon {
+  font-size: 24px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+}
+
+/* 移动端适配 */
+.ant-list-grid .ant-list-item {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 767px) {
+  .nav-menu{
+    display: none !important;
+  }
+
+  .ant-table {
+    font-size: 12px;
+  }
+
+  .ant-card-head-title {
+    font-size: 14px;
+  }
+
+  .ant-statistic-title {
+    font-size: 12px;
+  }
+
+  .ant-statistic-content {
+    font-size: 18px;
+  }
+
+  .ant-tabs-tab {
+    padding: 8px 12px !important;
+  }
+
+  .ant-list-grid .ant-col {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .ant-list-grid .ant-col {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+}
+
+/* 用户下拉菜单样式 */
+.user-dropdown {
+  cursor: pointer;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.user-dropdown:hover {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.user-dropdown .anticon {
+  margin-left: 4px;
+}
+
+.mobile-menu-button {
+  display: block !important;
+  margin-right: 12px;
+}
+
+.log-status-success {
+  color: #52c41a;
+}
+
+.log-status-failed {
+  color: #f5222d;
+}
+
+.refresh-button {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 移动端抽屉菜单 */
+.mobile-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.mobile-drawer .ant-menu {
+  border-right: none;
+}
+
+.mobile-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: #f0f0f0;
+  margin: 4px 0;
+}
+
+.user-info-section {
+  padding: 16px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+}
+
+.user-info-section .username {
+  margin-left: 12px;
+  font-weight: 500;
+}
+
+.nav-link {
+  padding: 0 15px;
+  color: rgba(0, 0, 0, 0.75);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-link:hover {
+  color: #1677ff;
+}
+
+.nav-link.active {
+  color: #1677ff;
+}
