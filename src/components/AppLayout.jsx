@@ -29,9 +29,11 @@ const AppLayout = () => {
 
   // 处理退出登录
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userName');
-    navigate('/login');
+    // 使用AuthAPI处理登出
+    import('../api').then(({ AuthAPI }) => {
+      AuthAPI.logout();
+      // 导航会在logout函数中自动处理
+    });
   };
 
   const navLinks = [

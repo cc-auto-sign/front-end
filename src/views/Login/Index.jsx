@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Card, Typography, Layout, notification, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined, LoginOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { AuthAPI } from '../../api';
 import './Login.css';
 
 const { Title } = Typography;
@@ -11,18 +12,13 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 模拟登录请求
+  // 使用AuthAPI处理登录请求
   const handleSubmit = async (values) => {
     setLoading(true);
 
-    // 这里应该调用实际的登录API
     try {
-      // 模拟网络请求
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // 假设登录成功，存储登录状态
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('userName', values.username);
+      // 调用登录API
+      await AuthAPI.login(values.username, values.password);
 
       notification.success({
         message: '登录成功',
