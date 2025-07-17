@@ -1,4 +1,5 @@
 import { baseUrl, storeUrl } from '../config/config';
+import errorHandler from './errorHandler';
 
 /**
  * HTTP请求工具类
@@ -41,53 +42,84 @@ class Http {
     };
 
     try {
-      const response = await fetch(fullUrl, requestOptions);
+      const response = await fetch(fullUrl, requestOptions)
+        .catch(networkError => {
+          // 处理网络错误
+          errorHandler.handleNetworkError(networkError);
+          throw networkError;
+        });
 
       // 解析响应JSON
       const data = await response.json();
 
       // 即使HTTP状态是200，也需要检查业务状态码
       if (!response.ok || (data && data.code !== 200)) {
+        const errorMessage = data?.message || `请求失败(${data?.code || response.status})`;
+
         // 处理401未授权错误 (HTTP状态或业务状态码)
         if (response.status === 401 || (data && data.code === 401)) {
-          // 清除本地存储的token
-          localStorage.removeItem('token');
-          localStorage.removeItem('isLoggedIn');
-          localStorage.removeItem('userName');
-
-          // 重定向到登录页
-          window.location.href = '/login';
-          throw new Error(data?.message || '未授权，请重新登录');
+          const authError = new Error(errorMessage || '未授权，请重新登录');
+          authError.status = 401;
+          authError.code = data?.code || 401;
+          throw authError;
         }
 
         // 处理403权限不足
         if (response.status === 403 || (data && data.code === 403)) {
-          throw new Error(data?.message || '权限不足，无法访问');
+          const permissionError = new Error(errorMessage || '权限不足，无法访问');
+          permissionError.status = 403;
+          permissionError.code = data?.code || 403;
+          throw permissionError;
         }
 
         // 处理404资源不存在
         if (response.status === 404 || (data && data.code === 404)) {
-          throw new Error(data?.message || '请求的资源不存在');
+          const notFoundError = new Error(errorMessage || '请求的资源不存在');
+          notFoundError.status = 404;
+          notFoundError.code = data?.code || 404;
+          throw notFoundError;
         }
 
         // 处理400参数错误
         if (response.status === 400 || (data && data.code === 400)) {
-          throw new Error(data?.message || '请求参数错误');
+          const badRequestError = new Error(errorMessage || '请求参数错误');
+          badRequestError.status = 400;
+          badRequestError.code = data?.code || 400;
+          throw badRequestError;
         }
 
         // 处理500服务器错误
         if (response.status === 500 || (data && data.code === 500)) {
-          throw new Error(data?.message || '服务器内部错误');
+          const serverError = new Error(errorMessage || '服务器内部错误');
+          serverError.status = 500;
+          serverError.code = data?.code || 500;
+          throw serverError;
         }
 
         // 处理其他错误
-        throw new Error(data?.message || `请求失败(${data?.code || response.status})`);
+        const genericError = new Error(errorMessage);
+        genericError.status = response.status;
+        genericError.code = data?.code || response.status;
+        throw genericError;
       }
 
       // 返回数据部分
       return data;
     } catch (error) {
       console.error('Request failed:', error);
+
+      // 根据错误类型处理
+      if (error.status === 401 || error.code === 401) {
+        errorHandler.handleAuthError(error);
+      } else if (error.status === 403 || error.code === 403) {
+        errorHandler.handlePermissionError(error);
+      } else if (!navigator.onLine) {
+        errorHandler.handleNetworkError(error);
+      } else {
+        // 默认API错误处理
+        errorHandler.handleApiError(error);
+      }
+
       throw error;
     }
   }
@@ -173,12 +205,42 @@ class Http {
         localStorage.setItem('token', response.data.AccessToken);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userName', username);
+
+        // 登录成功后获取用户信息
+        try {
+          await this.getUserInfo();
+        } catch (userInfoError) {
+          console.warn('获取用户信息失败，但不影响登录:', userInfoError);
+        }
+
         return response;
       }
 
       throw new Error(response.message || '登录失败');
     } catch (error) {
       console.error('Login failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * 获取用户信息并存储
+   * @returns {Promise<any>} - 用户信息
+   */
+  async getUserInfo() {
+    try {
+      const response = await this.get('/userInfo');
+
+      if (response.code === 200 && response.data) {
+        // 可以在这里存储一些基本用户信息到localStorage
+        if (response.data.nickName) {
+          localStorage.setItem('userName', response.data.nickName);
+        }
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Get user info failed:', error);
       throw error;
     }
   }

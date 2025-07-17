@@ -11,6 +11,7 @@ import NodesManagement from "./views/Nodes/Index.jsx";
 import TasksManagement from "./views/Tasks/Index.jsx";
 import Login from "./views/Login/Index.jsx";
 import NotFound from "./views/NotFound/Index.jsx";
+import Forbidden from "./views/Forbidden/Index.jsx";
 import AppLayout from "./components/AppLayout.jsx";
 import RequireAuth from "./components/RequireAuth.jsx";
 import './index.css';
@@ -38,6 +39,9 @@ createRoot(document.getElementById('root')).render(
 
       {/* 404 页面 */}
       <Route path="/404" element={<NotFound />} />
+
+      {/* 403 权限不足页面 */}
+      <Route path="/403" element={<Forbidden />} />
 
       {/* 未匹配的路由重定向到404 页面 */}
       <Route path="*" element={<Navigate to="/404" replace />} />
